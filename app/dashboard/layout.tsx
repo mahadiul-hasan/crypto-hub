@@ -6,8 +6,8 @@ import { AppSidebar } from "@/components/common/dashboard/sidebar";
 import Header from "@/components/common/dashboard/header";
 import { SidebarTrigger } from "@/components/common/dashboard/sidebar-trigger";
 import { SidebarProvider } from "@/context/SidebarContext";
-
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export default async function DashboardLayout({
   children,
