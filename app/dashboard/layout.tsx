@@ -9,7 +9,7 @@ import { SidebarProvider } from "@/context/SidebarContext";
 
 export const runtime = "nodejs";
 
-export default async function AdminLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: ReactNode;

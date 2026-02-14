@@ -30,14 +30,6 @@ export const RolePermissions: Record<UserRole, Permission[]> = {
   STUDENT: [],
 };
 
-/* ===============================
-   Checkers
-================================ */
-
-export function hasRole(userRole: UserRole, roles: UserRole[]) {
-  return roles.includes(userRole);
-}
-
 export function hasPermission(userRole: UserRole, permission: Permission) {
   const permissions = RolePermissions[userRole] || [];
 
@@ -56,16 +48,4 @@ export async function requireRole(roles: UserRole[]) {
   }
 
   return user;
-}
-
-/* ============================
-   Shortcuts
-============================ */
-
-export async function requireAdmin() {
-  return requireRole(["ADMIN"]);
-}
-
-export async function requireStudent() {
-  return requireRole(["STUDENT"]);
 }
