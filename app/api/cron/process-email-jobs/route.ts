@@ -10,6 +10,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const result = await processEmailJobs(10);
-  return NextResponse.json(result);
+  try {
+    // Process jobs but DON'T return the full result
+    await processEmailJobs(10);
+
+    // Return minimal success response
+    return NextResponse.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    // Log the full error internally
+    console.error("Email processing failed:", error);
+
+    // Return minimal error response
+    return NextResponse.json(
+      { success: false, error: "Processing failed" },
+      { status: 500 },
+    );
+  }
 }
