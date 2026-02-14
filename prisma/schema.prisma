@@ -306,7 +306,7 @@ model EmailLog {
 model EmailJob {
   id         String   @id @default(cuid())
   type       String
-  userId     String?
+  userId     String
   email      String
   subject    String
   html       String
@@ -323,7 +323,7 @@ model EmailJob {
   updatedAt  DateTime @updatedAt
 
   // Optional relation if you want
-  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([status, nextRunAt])
   @@index([createdAt])

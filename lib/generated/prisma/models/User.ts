@@ -630,12 +630,10 @@ export type UserCreateNestedOneWithoutEmailJobsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneWithoutEmailJobsNestedInput = {
+export type UserUpdateOneRequiredWithoutEmailJobsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutEmailJobsInput, Prisma.UserUncheckedCreateWithoutEmailJobsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutEmailJobsInput
   upsert?: Prisma.UserUpsertWithoutEmailJobsInput
-  disconnect?: Prisma.UserWhereInput | boolean
-  delete?: Prisma.UserWhereInput | boolean
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutEmailJobsInput, Prisma.UserUpdateWithoutEmailJobsInput>, Prisma.UserUncheckedUpdateWithoutEmailJobsInput>
 }

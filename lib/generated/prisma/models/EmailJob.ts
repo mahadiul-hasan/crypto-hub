@@ -240,7 +240,7 @@ export type EmailJobGroupByArgs<ExtArgs extends runtime.Types.Extensions.Interna
 export type EmailJobGroupByOutputType = {
   id: string
   type: string
-  userId: string | null
+  userId: string
   email: string
   subject: string
   html: string
@@ -280,7 +280,7 @@ export type EmailJobWhereInput = {
   NOT?: Prisma.EmailJobWhereInput | Prisma.EmailJobWhereInput[]
   id?: Prisma.StringFilter<"EmailJob"> | string
   type?: Prisma.StringFilter<"EmailJob"> | string
-  userId?: Prisma.StringNullableFilter<"EmailJob"> | string | null
+  userId?: Prisma.StringFilter<"EmailJob"> | string
   email?: Prisma.StringFilter<"EmailJob"> | string
   subject?: Prisma.StringFilter<"EmailJob"> | string
   html?: Prisma.StringFilter<"EmailJob"> | string
@@ -292,13 +292,13 @@ export type EmailJobWhereInput = {
   nextRunAt?: Prisma.DateTimeFilter<"EmailJob"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"EmailJob"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EmailJob"> | Date | string
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type EmailJobOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrder
   email?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   html?: Prisma.SortOrder
@@ -319,7 +319,7 @@ export type EmailJobWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.EmailJobWhereInput[]
   NOT?: Prisma.EmailJobWhereInput | Prisma.EmailJobWhereInput[]
   type?: Prisma.StringFilter<"EmailJob"> | string
-  userId?: Prisma.StringNullableFilter<"EmailJob"> | string | null
+  userId?: Prisma.StringFilter<"EmailJob"> | string
   email?: Prisma.StringFilter<"EmailJob"> | string
   subject?: Prisma.StringFilter<"EmailJob"> | string
   html?: Prisma.StringFilter<"EmailJob"> | string
@@ -331,13 +331,13 @@ export type EmailJobWhereUniqueInput = Prisma.AtLeast<{
   nextRunAt?: Prisma.DateTimeFilter<"EmailJob"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"EmailJob"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"EmailJob"> | Date | string
-  user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type EmailJobOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  userId?: Prisma.SortOrderInput | Prisma.SortOrder
+  userId?: Prisma.SortOrder
   email?: Prisma.SortOrder
   subject?: Prisma.SortOrder
   html?: Prisma.SortOrder
@@ -362,7 +362,7 @@ export type EmailJobScalarWhereWithAggregatesInput = {
   NOT?: Prisma.EmailJobScalarWhereWithAggregatesInput | Prisma.EmailJobScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"EmailJob"> | string
   type?: Prisma.StringWithAggregatesFilter<"EmailJob"> | string
-  userId?: Prisma.StringNullableWithAggregatesFilter<"EmailJob"> | string | null
+  userId?: Prisma.StringWithAggregatesFilter<"EmailJob"> | string
   email?: Prisma.StringWithAggregatesFilter<"EmailJob"> | string
   subject?: Prisma.StringWithAggregatesFilter<"EmailJob"> | string
   html?: Prisma.StringWithAggregatesFilter<"EmailJob"> | string
@@ -390,13 +390,13 @@ export type EmailJobCreateInput = {
   nextRunAt?: Date | string
   createdAt?: Date | string
   updatedAt?: Date | string
-  user?: Prisma.UserCreateNestedOneWithoutEmailJobsInput
+  user: Prisma.UserCreateNestedOneWithoutEmailJobsInput
 }
 
 export type EmailJobUncheckedCreateInput = {
   id?: string
   type: string
-  userId?: string | null
+  userId: string
   email: string
   subject: string
   html: string
@@ -424,13 +424,13 @@ export type EmailJobUpdateInput = {
   nextRunAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneWithoutEmailJobsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutEmailJobsNestedInput
 }
 
 export type EmailJobUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   html?: Prisma.StringFieldUpdateOperationsInput | string
@@ -447,7 +447,7 @@ export type EmailJobUncheckedUpdateInput = {
 export type EmailJobCreateManyInput = {
   id?: string
   type: string
-  userId?: string | null
+  userId: string
   email: string
   subject: string
   html: string
@@ -480,7 +480,7 @@ export type EmailJobUpdateManyMutationInput = {
 export type EmailJobUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
   html?: Prisma.StringFieldUpdateOperationsInput | string
@@ -675,7 +675,7 @@ export type EmailJobScalarWhereInput = {
   NOT?: Prisma.EmailJobScalarWhereInput | Prisma.EmailJobScalarWhereInput[]
   id?: Prisma.StringFilter<"EmailJob"> | string
   type?: Prisma.StringFilter<"EmailJob"> | string
-  userId?: Prisma.StringNullableFilter<"EmailJob"> | string | null
+  userId?: Prisma.StringFilter<"EmailJob"> | string
   email?: Prisma.StringFilter<"EmailJob"> | string
   subject?: Prisma.StringFilter<"EmailJob"> | string
   html?: Prisma.StringFilter<"EmailJob"> | string
@@ -770,7 +770,7 @@ export type EmailJobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   nextRunAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.EmailJob$userArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["emailJob"]>
 
 export type EmailJobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -788,7 +788,7 @@ export type EmailJobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   nextRunAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.EmailJob$userArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["emailJob"]>
 
 export type EmailJobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -806,7 +806,7 @@ export type EmailJobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   nextRunAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  user?: boolean | Prisma.EmailJob$userArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["emailJob"]>
 
 export type EmailJobSelectScalar = {
@@ -828,24 +828,24 @@ export type EmailJobSelectScalar = {
 
 export type EmailJobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "userId" | "email" | "subject" | "html" | "isAdmin" | "status" | "attempts" | "maxAttempts" | "lastError" | "nextRunAt" | "createdAt" | "updatedAt", ExtArgs["result"]["emailJob"]>
 export type EmailJobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.EmailJob$userArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type EmailJobIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.EmailJob$userArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 export type EmailJobIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  user?: boolean | Prisma.EmailJob$userArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
 
 export type $EmailJobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "EmailJob"
   objects: {
-    user: Prisma.$UserPayload<ExtArgs> | null
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     type: string
-    userId: string | null
+    userId: string
     email: string
     subject: string
     html: string
@@ -1251,7 +1251,7 @@ readonly fields: EmailJobFieldRefs;
  */
 export interface Prisma__EmailJobClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  user<T extends Prisma.EmailJob$userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EmailJob$userArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1688,25 +1688,6 @@ export type EmailJobDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inte
    * Limit how many EmailJobs to delete.
    */
   limit?: number
-}
-
-/**
- * EmailJob.user
- */
-export type EmailJob$userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the User
-   */
-  select?: Prisma.UserSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the User
-   */
-  omit?: Prisma.UserOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.UserInclude<ExtArgs> | null
-  where?: Prisma.UserWhereInput
 }
 
 /**
