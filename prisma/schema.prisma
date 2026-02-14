@@ -1,0 +1,338 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ENUMS
+
+enum UserRole {
+  STUDENT
+  ADMIN
+}
+
+enum EnrollmentStatus {
+  PENDING
+  PAYMENT_SUBMITTED
+  ACTIVE
+  REJECTED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum SessionStatus {
+  ACTIVE
+  EXPIRED
+}
+
+enum PaymentMethod {
+  BKASH
+  NAGAD
+  ROCKET
+  BANK
+}
+
+// USER & AUTH
+
+model User {
+  id String @id @default(uuid())
+
+  name     String
+  email    String  @unique
+  password String
+  phone    String?
+
+  role UserRole @default(STUDENT)
+
+  isActive   Boolean @default(false)
+  isVerified Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions      UserSession[]
+  enrollments   Enrollment[]
+  notifications Notification[]
+
+  verificationTokens  VerificationToken[]
+  passwordResetTokens PasswordResetToken[]
+
+  emailLogs     EmailLog[]
+  emailCounters EmailCounter[]
+  emailJobs EmailJob[]
+
+  verifiedPayments Payment[] @relation("PaymentVerifier")
+
+  @@index([email])
+  @@index([role])
+}
+
+model UserSession {
+  id    String @id @default(uuid())
+  token String @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  ip        String?
+  userAgent String?
+
+  expiresAt DateTime
+  rotatedAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model VerificationToken {
+  id    String @id @default(uuid())
+  token String @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id    String @id @default(uuid())
+  token String @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// BATCH
+
+model Batch {
+  id String @id @default(uuid())
+
+  name String
+
+  enrollStart DateTime
+  enrollEnd   DateTime
+
+  price Decimal @db.Decimal(10, 2)
+
+  seats       Int     @default(0)
+  isOpen      Boolean @default(false)
+  isPublished Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments   Enrollment[]
+  sessions      ClassSession[]
+  notifications Notification[]
+
+  @@index([isOpen])
+  @@index([isPublished])
+  @@index([enrollStart, enrollEnd])
+}
+
+// ENROLLMENT
+
+model Enrollment {
+  id String @id @default(uuid())
+
+  userId  String
+  batchId String
+
+  enrollmentFee Decimal @db.Decimal(10, 2)
+
+  status EnrollmentStatus @default(PENDING)
+
+  paidAt       DateTime?
+  approvedAt   DateTime?
+  rejectedAt   DateTime?
+  rejectReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  batch Batch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  payment Payment?
+
+  @@index([status])
+  @@index([batchId])
+  @@index([userId, status])
+  @@index([userId, batchId])
+}
+
+// PAYMENT
+
+model Payment {
+  id String @id @default(uuid())
+
+  enrollmentId String     @unique
+  enrollment   Enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+
+  trxId String @unique
+
+  method PaymentMethod
+
+  senderNumber String?
+
+  amount Decimal @db.Decimal(10, 2)
+
+  status PaymentStatus @default(PENDING)
+
+  verifiedById String?
+  verifiedBy   User?   @relation("PaymentVerifier", fields: [verifiedById], references: [id])
+
+  verifiedAt DateTime?
+  paidAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([trxId])
+  @@index([createdAt])
+  @@map("payments")
+}
+
+// CLASS SESSIONS
+
+model ClassSession {
+  id String @id @default(uuid())
+
+  batchId String
+
+  title      String
+  meetingUrl String
+
+  startsAt DateTime
+  endsAt   DateTime
+
+  status SessionStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  batch Batch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@index([batchId])
+  @@index([startsAt])
+}
+
+// NOTIFICATIONS (PER-USER)
+
+model Notification {
+  id String @id @default(uuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title String
+  body  String
+
+  batchId String?
+
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  batch Batch? @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+}
+
+// EMAIL SYSTEM
+
+model EmailCounter {
+  id String @id @default(uuid())
+
+  scope String
+  key   String
+  date  DateTime
+
+  // ✅ correct: optional user relation
+  userId String?
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  count Int @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([scope, key, date])
+  @@index([date])
+  @@index([scope, key])
+  @@index([userId])
+}
+
+
+model EmailLog {
+  id String @id @default(uuid())
+
+  userId    String
+  email     String
+  type      String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([type])
+  @@map("email_logs")
+}
+
+model EmailJob {
+  id         String   @id @default(cuid())
+  type       String
+  userId     String?
+  email      String
+  subject    String
+  html       String
+  isAdmin    Boolean  @default(false)
+
+  status     EmailJobStatus @default(QUEUED)
+  attempts   Int      @default(0)
+  maxAttempts Int     @default(3)
+
+  lastError  String?
+  nextRunAt  DateTime @default(now())
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Optional relation if you want
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, nextRunAt])
+  @@index([createdAt])
+}
+
+enum EmailJobStatus {
+  QUEUED
+  PROCESSING
+  SENT
+  FAILED
+}
+

@@ -1,0 +1,6 @@
+[functions]
+  node_bundler = "esbuild"
+
+[[scheduled.functions]]
+  path = "/.netlify/functions/process-email-jobs"
+  schedule = "*/5 * * * *"
