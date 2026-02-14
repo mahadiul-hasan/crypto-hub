@@ -1,5 +1,0 @@
-[functions]
-  node_bundler = "esbuild"
-
-[functions."process-email-jobs"]
-  format = "esm"

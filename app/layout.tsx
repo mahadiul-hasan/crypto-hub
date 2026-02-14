@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Baloo_Da_2 } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/context/ToastContext";
-import TopLoader from "@/components/common/TopLoader";
 
 const balloDa2 = Baloo_Da_2({
   variable: "--font-baloo-da_2",
@@ -22,10 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${balloDa2.variable} antialiased`}>
-        <ToastProvider>
-          <TopLoader />
-          {children}
-        </ToastProvider>
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );
