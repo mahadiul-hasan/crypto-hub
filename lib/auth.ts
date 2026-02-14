@@ -8,8 +8,8 @@ import { unstable_cache } from "next/cache";
    Config
 ================================ */
 
-const SESSION_COOKIE = "session_id"; // Cookie name
-const SESSION_EXPIRE_DAYS = 30; // Expiry duration in days
+const SESSION_COOKIE = "session_id";
+const SESSION_EXPIRE_DAYS = 30;
 
 /* ===============================
    Utils
@@ -33,68 +33,48 @@ async function getCookieStore() {
 
 export async function createSession(userId: string) {
   const token = generateToken();
-
   const expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + SESSION_EXPIRE_DAYS);
 
-  // Create session in the database
   await prisma.userSession.create({
-    data: {
-      token,
-      userId,
-      expiresAt,
-    },
+    data: { token, userId, expiresAt },
   });
 
   const cookieStore = await getCookieStore();
-
-  // Set the cookie with proper expiration, path, and other flags
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Secure cookie in production
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    expires: expiresAt, // Set expiry on cookie
+    expires: expiresAt,
   });
 
-  // 👇 Invalidate cache when user logs in
   await invalidateUserCache();
 }
 
 export async function destroySession() {
   const cookieStore = await getCookieStore();
-
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
   if (!token) return;
 
-  // Delete session from DB
-  await prisma.userSession.deleteMany({
-    where: { token },
-  });
-
-  // Delete session cookie
+  await prisma.userSession.deleteMany({ where: { token } });
   cookieStore.delete(SESSION_COOKIE);
-
-  // 👇 Invalidate cache when user logs out
   await invalidateUserCache();
 }
 
-// 👇 Internal function that does the actual database query
-async function fetchCurrentUser() {
-  const cookieStore = await getCookieStore();
+/* ===============================
+   Current User (FIXED)
+================================ */
 
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-
+// 👇 This function takes token as argument - accepts string | null
+async function fetchUserByToken(token: string | null) {
   if (!token) return null;
 
-  // Find the session by token
   const session = await prisma.userSession.findUnique({
     where: { token },
-
     select: {
       expiresAt: true,
-
       user: {
         select: {
           id: true,
@@ -120,19 +100,27 @@ async function fetchCurrentUser() {
   return session.user;
 }
 
-// 👇 Cached version - NO AUTO REVALIDATION
-export const getCurrentUser = unstable_cache(
-  async () => {
-    return await fetchCurrentUser();
+// 👇 Cached version - accepts string | null
+const getCachedUser = unstable_cache(
+  async (token: string | null) => {
+    return await fetchUserByToken(token);
   },
   ["current-user"],
   {
-    // 👇 Remove revalidate - cache persists until manually invalidated
     tags: ["user:session"],
   },
 );
 
-// 👇 Helper to invalidate cache (called only on login/logout)
+// 👇 Public function - convert undefined to null
+export async function getCurrentUser() {
+  const cookieStore = await getCookieStore();
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+
+  // 👇 Convert undefined to null
+  return getCachedUser(token ?? null);
+}
+
+// 👇 Helper to invalidate cache
 async function invalidateUserCache() {
   const { updateTag } = await import("next/cache");
   updateTag("user:session");
