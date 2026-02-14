@@ -3,6 +3,8 @@ import { Navbar } from "@/components/common/app/navbar";
 import { UserProvider } from "@/context/UserContext";
 import { getCurrentUser } from "@/lib/auth";
 
+export const runtime = "nodejs";
+
 export default async function AppLayout({
   children,
 }: {
