@@ -1,5 +1,6 @@
+// app/api/cron/process-email-jobs/route.ts
 import { processEmailJobs } from "@/lib/email-worker";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 
@@ -7,26 +8,20 @@ export async function GET(request: NextRequest) {
   // Verify cron secret
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return new Response(null, { status: 401 });
   }
 
   try {
-    // Process jobs but DON'T return the full result
+    // Process jobs - don't assign result to avoid any accidental logging
     await processEmailJobs(10);
 
-    // Return minimal success response
-    return NextResponse.json({
-      success: true,
-      timestamp: new Date().toISOString(),
-    });
+    // Return absolutely nothing - just 200 OK
+    return new Response(null, { status: 200 });
   } catch (error) {
-    // Log the full error internally
+    // Log internally only
     console.error("Email processing failed:", error);
 
-    // Return minimal error response
-    return NextResponse.json(
-      { success: false, error: "Processing failed" },
-      { status: 500 },
-    );
+    // Return 500 with empty body
+    return new Response(null, { status: 500 });
   }
 }
