@@ -80,6 +80,11 @@ const routeTitles: Record<
     parent: "Admin",
     icon: BarChart3,
   },
+  "/dashboard/admin/queue-status": {
+    title: "Queue Status",
+    parent: "Admin",
+    icon: BarChart3,
+  },
   "/dashboard/admin/profile": {
     title: "Profile",
     parent: "Admin",

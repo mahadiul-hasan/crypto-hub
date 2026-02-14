@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { randomBytes } from "crypto";
+import { unstable_cache } from "next/cache";
 
 /* ===============================
    Config
@@ -19,7 +20,7 @@ export function generateToken(size = 32) {
 }
 
 /* ===============================
-   Cookie Helper (IMPORTANT)
+   Cookie Helper
 ================================ */
 
 async function getCookieStore() {
@@ -55,6 +56,9 @@ export async function createSession(userId: string) {
     path: "/",
     expires: expiresAt, // Set expiry on cookie
   });
+
+  // 👇 Invalidate cache when user logs in
+  await invalidateUserCache();
 }
 
 export async function destroySession() {
@@ -71,13 +75,13 @@ export async function destroySession() {
 
   // Delete session cookie
   cookieStore.delete(SESSION_COOKIE);
+
+  // 👇 Invalidate cache when user logs out
+  await invalidateUserCache();
 }
 
-/* ===============================
-   Current User
-================================ */
-
-export async function getCurrentUser() {
+// 👇 Internal function that does the actual database query
+async function fetchCurrentUser() {
   const cookieStore = await getCookieStore();
 
   const token = cookieStore.get(SESSION_COOKIE)?.value;
@@ -114,6 +118,24 @@ export async function getCurrentUser() {
   }
 
   return session.user;
+}
+
+// 👇 Cached version - NO AUTO REVALIDATION
+export const getCurrentUser = unstable_cache(
+  async () => {
+    return await fetchCurrentUser();
+  },
+  ["current-user"],
+  {
+    // 👇 Remove revalidate - cache persists until manually invalidated
+    tags: ["user:session"],
+  },
+);
+
+// 👇 Helper to invalidate cache (called only on login/logout)
+async function invalidateUserCache() {
+  const { updateTag } = await import("next/cache");
+  updateTag("user:session");
 }
 
 /* ===============================

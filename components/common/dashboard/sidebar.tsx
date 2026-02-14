@@ -88,6 +88,11 @@ const adminSidebarItems = [
     link: "/dashboard/admin/email-counters",
     icon: BarChart3,
   },
+  {
+    name: "Queue Status",
+    link: "/dashboard/admin/queue-status",
+    icon: BarChart3,
+  },
 ];
 
 export function AppSidebar() {
